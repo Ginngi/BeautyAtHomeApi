@@ -1,6 +1,7 @@
 package com.bath
 
 import com.bath.db.DatabaseFactory
+import com.bath.user.UserService
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -44,13 +45,19 @@ fun Application.module(testing: Boolean = false) {
 
     DatabaseFactory.init()
 
+    val userService = UserService()
+
+
     routing {
         get("/") {
             call.respondText("HOLA BONA TARDA!", contentType = ContentType.Text.Plain)
         }
 
-        get("/json/jackson") {
-            call.respond(mapOf("hello" to "world"))
+        get("/users") {
+            userService.createUser()
+
+            val users = userService.getUsers()
+            call.respond(mapOf("users" to synchronized(users) { users.toList() }))
         }
     }
 }

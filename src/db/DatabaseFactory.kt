@@ -1,6 +1,6 @@
 package com.bath.db
 
-import com.bath.user.User
+import com.bath.user.Users
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
@@ -21,7 +21,7 @@ object DatabaseFactory {
 
         transaction {
             addLogger(StdOutSqlLogger)
-            SchemaUtils.create(User)
+            SchemaUtils.create(Users)
         }
     }
 
