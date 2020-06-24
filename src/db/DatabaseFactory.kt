@@ -27,6 +27,7 @@ object DatabaseFactory {
 
     private fun initDataSource(): HikariDataSource {
         val config = HikariConfig()
+
         config.driverClassName = DB_DRIVER
         config.jdbcUrl = DB_URL
         config.username = DB_USER
@@ -35,6 +36,7 @@ object DatabaseFactory {
         config.isAutoCommit = false
         config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
         config.validate()
+
         return HikariDataSource(config)
     }
 }
