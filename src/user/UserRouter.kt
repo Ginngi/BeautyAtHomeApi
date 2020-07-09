@@ -1,5 +1,8 @@
 package com.bath.user
 
+import com.bath.api.ApiError
+import com.bath.api.ErrorCode
+import com.bath.api.toResponse
 import io.ktor.application.call
 import io.ktor.request.receive
 import io.ktor.response.respond
@@ -10,19 +13,23 @@ fun Route.user(userService: UserService) {
 
     route("/user") {
         get("/{id}") {
-            val id = call.parameters["id"] ?: throw IllegalStateException("Must provide id")
-            val uuid = UUID.fromString(id)
-            userService.getUserById(uuid)
+            try {
+                val id = call.parameters["id"]
+                val user = userService.getUserById(UUID.fromString(id))
+                call.respond(toResponse(user))
+            } catch (e: NoSuchElementException) {
+                call.respond(toResponse(ApiError(ErrorCode.USER_NOT_FOUND, "User not found")))
+            }
         }
 
         post("/") {
             val user: NewUser = call.receive()
-            call.respond(userService.insertUser(user))
+            call.respond(toResponse(userService.insertUser(user)))
         }
 
         put("/") {
             val user: User = call.receive()
-            call.respond(userService.updateUser(user))
+            call.respond(toResponse(userService.updateUser(user)))
         }
 
         delete("/{id}") {
@@ -34,6 +41,6 @@ fun Route.user(userService: UserService) {
 
     get("/users") {
         val users = userService.getUsers()
-        call.respond(mapOf("users" to synchronized(users) { users.toList() }))
+        call.respond(toResponse(mapOf("users" to synchronized(users) { users.toList() })))
     }
 }
