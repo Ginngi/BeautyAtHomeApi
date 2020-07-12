@@ -2,6 +2,8 @@ package com.bath
 
 import com.bath.auth.AuthJWTProvider
 import com.bath.db.DatabaseFactory
+import com.bath.login.LoginService
+import com.bath.login.login
 import com.bath.user.UserService
 import com.bath.user.user
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -25,6 +27,7 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     val userService = UserService()
+    val loginService = LoginService(userService)
 
     install(CORS) {
         method(HttpMethod.Options)
@@ -58,5 +61,6 @@ fun Application.module() {
 
     routing {
         user(userService)
+        login(loginService)
     }
 }
