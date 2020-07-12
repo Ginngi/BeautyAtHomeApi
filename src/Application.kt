@@ -1,23 +1,19 @@
 package com.bath
 
+import com.bath.auth.AuthJWTProvider
 import com.bath.db.DatabaseFactory
 import com.bath.user.UserService
 import com.bath.user.user
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
-import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
+import io.ktor.auth.jwt.jwt
 import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.response.respondText
-import io.ktor.routing.get
-import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.commandLineEnvironment
 import io.ktor.server.engine.embeddedServer
@@ -28,6 +24,8 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    val userService = UserService()
+
     install(CORS) {
         method(HttpMethod.Options)
         method(HttpMethod.Put)
@@ -39,7 +37,15 @@ fun Application.module() {
     }
 
     install(Authentication) {
-
+        jwt {
+            verifier(AuthJWTProvider.verifier)
+            realm = "ktor.io"
+            validate {
+                it.payload.getClaim("id").asString()?.let { uuid ->
+                    userService.getUserById(uuid)
+                }
+            }
+        }
     }
 
     install(ContentNegotiation) {
@@ -49,8 +55,6 @@ fun Application.module() {
     }
 
     DatabaseFactory.init()
-
-    val userService = UserService()
 
     routing {
         user(userService)

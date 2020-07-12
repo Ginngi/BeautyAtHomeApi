@@ -1,5 +1,6 @@
 package com.bath.user
 
+import io.ktor.auth.Principal
 import java.util.UUID
 
 data class User(
@@ -7,7 +8,7 @@ data class User(
     val name: String,
     val email: String,
     val password: String
-)
+): Principal
 
 data class NewUser(
     val name: String,

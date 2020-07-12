@@ -4,13 +4,13 @@ import com.bath.api.ApiError
 import com.bath.api.ErrorCode
 import com.bath.api.toResponse
 import io.ktor.application.call
+import io.ktor.auth.authenticate
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.*
 import java.util.*
 
 fun Route.user(userService: UserService) {
-
     route("/user") {
         get("/{id}") {
             try {
@@ -19,6 +19,16 @@ fun Route.user(userService: UserService) {
                 call.respond(toResponse(user))
             } catch (e: NoSuchElementException) {
                 call.respond(toResponse(ApiError(ErrorCode.USER_NOT_FOUND, "User not found")))
+            }
+        }
+
+        authenticate {
+            get("/self") {
+                try {
+                    call.respond(toResponse(call.user!!))
+                } catch (e: NoSuchElementException) {
+                    call.respond(toResponse(ApiError(ErrorCode.USER_NOT_FOUND, "User not found")))
+                }
             }
         }
 

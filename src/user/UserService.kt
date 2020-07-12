@@ -33,6 +33,9 @@ class UserService {
             .mapNotNull { toUser(it) }
     }
 
+    suspend fun getUserById(uuid: String): User =
+        getUserById(UUID.fromString(uuid))
+
     suspend fun getUserById(uuid: UUID): User = query {
         Users.select { Users.id eq uuid }
             .map { toUser(it) }
