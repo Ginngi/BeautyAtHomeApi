@@ -30,22 +30,22 @@ fun Route.user(userService: UserService) {
                     call.respond(toResponse(ApiError(ErrorCode.USER_NOT_FOUND, "User not found")))
                 }
             }
-        }
 
-        post("/") {
-            val user: NewUser = call.receive()
-            call.respond(toResponse(userService.insertUser(user)))
-        }
+            post("/") {
+                val user: NewUser = call.receive()
+                call.respond(toResponse(userService.insertUser(user)))
+            }
 
-        put("/") {
-            val user: User = call.receive()
-            call.respond(toResponse(userService.updateUser(user)))
-        }
+            put("/") {
+                val user: User = call.receive()
+                call.respond(toResponse(userService.updateUser(user)))
+            }
 
-        delete("/{id}") {
-            val id = call.parameters["id"] ?: throw IllegalStateException("Must provide id")
-            val uuid = UUID.fromString(id)
-            userService.deleteUser(uuid)
+            delete("/{id}") {
+                val id = call.parameters["id"] ?: throw IllegalStateException("Must provide id")
+                val uuid = UUID.fromString(id)
+                userService.deleteUser(uuid)
+            }
         }
     }
 
