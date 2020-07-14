@@ -17,14 +17,13 @@ class UserService {
             it[password] = user.password
         }.value
 
-        User(uuid, user.name, user.email, user.password)
+        User(uuid, user.name, user.email)
     }
 
     suspend fun updateUser(user: User) = query {
         Users.update({ Users.id eq user.id }) {
             it[name] = user.name
             it[email] = user.email
-            it[password] = user.password
         }
     }
 
