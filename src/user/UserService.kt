@@ -45,13 +45,4 @@ class UserService {
     suspend fun deleteUser(uuid: UUID): Boolean = query {
         Users.deleteWhere { Users.id eq uuid } > 0
     }
-
-    private fun toUser(row: ResultRow): User {
-        return User(
-            id = row[id].value,
-            name = row[name],
-            email = row[email],
-            password = row[password]
-        )
-    }
 }
