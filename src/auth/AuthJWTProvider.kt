@@ -4,16 +4,16 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.bath.user.User
+import com.typesafe.config.ConfigFactory
 
 object AuthJWTProvider {
 
-    private const val secret = "zAP5MBA4B4Ijz0MZaS48"
-    private const val issuer = "ktor.io"
-    private val algorithm = Algorithm.HMAC512(secret)
+    private val jwtConfig = ConfigFactory.load().getConfig("jwt")
+    private val algorithm = Algorithm.HMAC512(jwtConfig.getString("secret"))
 
     val verifier: JWTVerifier = JWT
         .require(algorithm)
-        .withIssuer(issuer)
+        .withIssuer(jwtConfig.getString("issuer"))
         .build()
 
     /**
@@ -21,7 +21,7 @@ object AuthJWTProvider {
      */
     fun makeToken(user: User): String = JWT.create()
         .withSubject("Authentication")
-        .withIssuer(issuer)
+        .withIssuer(jwtConfig.getString("issuer"))
         .withClaim("id", user.id.toString())
         .sign(algorithm)
 }

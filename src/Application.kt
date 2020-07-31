@@ -7,6 +7,7 @@ import com.bath.login.login
 import com.bath.user.UserService
 import com.bath.user.user
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.typesafe.config.ConfigFactory
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.auth.Authentication
@@ -42,7 +43,7 @@ fun Application.module() {
     install(Authentication) {
         jwt {
             verifier(AuthJWTProvider.verifier)
-            realm = "ktor.io"
+            realm = ConfigFactory.load().getConfig("jwt").getString("realm")
             validate {
                 it.payload.getClaim("id").asString()?.let { uuid ->
                     userService.getUserById(uuid)

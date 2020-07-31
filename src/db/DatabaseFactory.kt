@@ -1,6 +1,7 @@
 package com.bath.db
 
 import com.bath.user.Users
+import com.typesafe.config.ConfigFactory
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
@@ -10,12 +11,6 @@ import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
-
-    private val DB_URL = "jdbc:postgresql://postgres:5432/postgres"
-    private val DB_DRIVER = "org.postgresql.Driver"
-    private val DB_USER = "postgres"
-    private val DB_PASSWORD = ""
-
     fun init() {
         Database.connect(initDataSource())
 
@@ -26,17 +21,19 @@ object DatabaseFactory {
     }
 
     private fun initDataSource(): HikariDataSource {
-        val config = HikariConfig()
+        val configuration = ConfigFactory.load().getConfig("postgres")
 
-        config.driverClassName = DB_DRIVER
-        config.jdbcUrl = DB_URL
-        config.username = DB_USER
-        config.password = DB_PASSWORD
-        config.maximumPoolSize = 3
-        config.isAutoCommit = false
-        config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
-        config.validate()
+        val dBConfig = HikariConfig()
 
-        return HikariDataSource(config)
+        dBConfig.driverClassName = configuration.getString("driver")
+        dBConfig.jdbcUrl = configuration.getString("url")
+        dBConfig.username = configuration.getString("user")
+        dBConfig.password = configuration.getString("password")
+        dBConfig.maximumPoolSize = 3
+        dBConfig.isAutoCommit = false
+        dBConfig.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+        dBConfig.validate()
+
+        return HikariDataSource(dBConfig)
     }
 }
